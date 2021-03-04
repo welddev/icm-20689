@@ -13,7 +13,7 @@
 #include "stdint.h"
 #include "stdio.h"
 
-//forward declaration of spi handle struct
+//forward declaration of SPI handle struct
 struct SPI_HANDLE;
 
 typedef void (*spiActionFcnPtr)(struct SPI_HANDLE spiHandle);
@@ -32,6 +32,15 @@ typedef struct SPI_HANDLE{
 	spiActionFcnPtr actionFcn;
 	spiActionFcnPtr reactionFcn;
 }SPI_HANDLE_TYPE;
+
+typedef struct MPU_HANDLE{
+	uint8_t accel_data_in[6];
+	uint8_t gyro_data_in[10];
+	uint8_t size;
+	SPI_ACTION pendingAction;
+	spiActionFcnPtr actionFcn;
+	spiActionFcnPtr reactionFcn;
+}MPU_HANDLE_TYPE;
 
 void spiAction(SPI_HANDLE_TYPE spiHandle);
 void spiReaction(SPI_HANDLE_TYPE spiHandle);
