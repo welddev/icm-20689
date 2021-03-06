@@ -9,13 +9,10 @@
 #include "libs.h"
 #include "main.h"
 
-extern SPI_HandleTypeDef hspi2;
-
-static SPI_HANDLE_TYPE spi2Handle;
-static MPU_HANDLE_TYPE mpuHandle;
 
 void spiAction(SPI_ACTION action, uint8_t reg, uint8_t value){
 	clearSpiBuff(spi2Handle);
+
 	spi2Handle.pendingAction = action;
 	switch(action){
 	case MPU_WRITE_REG:
@@ -25,10 +22,10 @@ void spiAction(SPI_ACTION action, uint8_t reg, uint8_t value){
 		break;
 	case MPU_READ_REG:
 		spi2Handle.tx_buff[0] = reg;
-		HAL_SPI_TransmitReceive_DMA(&hspi2, spi2Handle.tx_buff, spiHandle->rx_buff, 2);
+		HAL_SPI_TransmitReceive_DMA(&hspi2, spi2Handle.tx_buff, spi2Handle.rx_buff, 2);
 		break;
 	case MPU_READ_WHOAMI:
-		spi2Handle.tx_buff[0] = 0x75 + 1<<7;
+		spi2Handle.tx_buff[0] = 0x75 + (1<<7);
 		HAL_SPI_TransmitReceive_DMA(&hspi2, spi2Handle.tx_buff, spi2Handle.rx_buff, 2);
 	default:
 		break;
@@ -48,4 +45,12 @@ void clearSpiBuff(){
 		spi2Handle.tx_buff[i] = 0;
 		spi2Handle.rx_buff[i] = 0;
 	}
+}
+
+void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi){
+	CS_HIGH;
+}
+
+void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi){
+	CS_HIGH;
 }

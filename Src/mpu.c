@@ -5,12 +5,14 @@
 *
 * Author						: <author>	
 * Application Version			: <appVersion>
-* C source code generated on    : Thu, 04 Mar 2021 17:36:49 GMT
+* C source code generated on    : Fri, 05 Mar 2021 19:14:56 GMT
 *
 */
 
 //Include user defined headers.
 #include "main.h"
+#include "stm32f4xx_it.h"
+#include "libs.h"
 
 //Include generated header.
 #include "mpu.h"
@@ -35,21 +37,6 @@ void wF_init(void){
 }
 
 void run_app_1000hz(void){
-	switch(wS_mpu_master){
-		case wS_IN_start:
-			if(wD_TIMER_COMPARE(wT_TIMER1, 999)){
-				wS_mpu_master = wS_IN_init_299;
-			}else{
-				wD_TIMER_INCREMENT(wT_TIMER1);
-			}
-			break;
-		case wS_IN_init_299:
-			break;
-		default:
-			
-			wD_TIMER_RESET(wT_TIMER1);
-			wS_mpu_master = wS_IN_start;
-	}
 	switch(wS_blink){
 		case wS_IN_State383:
 			if(wD_TIMER_COMPARE(wT_TIMER2, 99)){
@@ -64,6 +51,59 @@ void run_app_1000hz(void){
 			HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 			wD_TIMER_RESET(wT_TIMER2);
 			wS_blink = wS_IN_State383;
+	}
+	switch(wS_mpu_master){
+		case wS_IN_start:
+			if(wD_TIMER_COMPARE(wT_TIMER1, 999)){
+				spi2Handle.tx_buff[0] = 0x6B;
+				spi2Handle.tx_buff[1] = 0x80;
+				CS_LOW;
+				HAL_SPI_Transmit_DMA(&hspi2, spi2Handle.tx_buff, 2);
+				wD_TIMER_RESET(wT_TIMER1);
+				wS_mpu_master = wS_IN_init_299;
+			}else{
+				wD_TIMER_INCREMENT(wT_TIMER1);
+			}
+			break;
+		case wS_IN_init_299:
+			if(wD_TIMER_COMPARE(wT_TIMER1, 999)){
+				spi2Handle.tx_buff[0] = 0x6A;
+				spi2Handle.tx_buff[1] = 1<<4;
+				CS_LOW;
+				HAL_SPI_Transmit_DMA(&hspi2, spi2Handle.tx_buff, 2);
+				wD_TIMER_RESET(wT_TIMER1);
+				wS_mpu_master = wS_IN_State595;
+			}else{
+				wD_TIMER_INCREMENT(wT_TIMER1);
+			}
+			break;
+		case wS_IN_State595:
+			if(wD_TIMER_COMPARE(wT_TIMER1, 999)){
+				spi2Handle.tx_buff[0] = 0x75 + (1<<7);
+				spi2Handle.tx_buff[1] = 0;
+				CS_LOW;
+				HAL_SPI_TransmitReceive_DMA(&hspi2, spi2Handle.tx_buff, spi2Handle.rx_buff, 2);
+				wD_TIMER_RESET(wT_TIMER1);
+				wS_mpu_master = wS_IN_State703;
+			}else{
+				wD_TIMER_INCREMENT(wT_TIMER1);
+			}
+			break;
+		case wS_IN_State703:
+			if(wD_TIMER_COMPARE(wT_TIMER1, 999)){
+				spi2Handle.tx_buff[0] = 0x75 + (1<<7);
+				spi2Handle.tx_buff[1] = 0;
+				CS_LOW;
+				HAL_SPI_TransmitReceive_DMA(&hspi2, spi2Handle.tx_buff, spi2Handle.rx_buff, 2);
+				wD_TIMER_RESET(wT_TIMER1);
+			}else{
+				wD_TIMER_INCREMENT(wT_TIMER1);
+			}
+			break;
+		default:
+			
+			wD_TIMER_RESET(wT_TIMER1);
+			wS_mpu_master = wS_IN_start;
 	}
 
 }

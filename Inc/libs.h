@@ -13,6 +13,8 @@
 #include "stdint.h"
 #include "stdio.h"
 
+#define CS_LOW HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
+#define CS_HIGH HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
 //forward declaration of SPI handle struct
 struct SPI_HANDLE;
 
@@ -43,6 +45,12 @@ typedef struct MPU_HANDLE{
 	spiActionFcnPtr actionFcn;
 	spiActionFcnPtr reactionFcn;
 }MPU_HANDLE_TYPE;
+
+extern SPI_HandleTypeDef hspi2;
+
+SPI_HANDLE_TYPE spi2Handle;
+MPU_HANDLE_TYPE mpuHandle;
+
 
 void spiAction(SPI_ACTION action, uint8_t reg, uint8_t value);
 void spiReaction();

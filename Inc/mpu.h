@@ -5,12 +5,15 @@
 *
 * Author						: <author>	
 * Application Version			: <appVersion>
-* C source code generated on    : Thu, 04 Mar 2021 17:36:49 GMT
+* C source code generated on    : Fri, 05 Mar 2021 19:14:56 GMT
 *
 */
 
 #include "stdint.h"
 
+//Additional libraries for memcpy and memset
+#include "string.h"
+#include "stdlib.h"
 
 //Max value that a timer can keep
 #ifndef wD_TIMER_MAX
@@ -62,6 +65,8 @@ typedef enum{
 	wS_IN_init_299,
 	wS_IN_blink,
 	wS_IN_State383,
+	wS_IN_State595,
+	wS_IN_State703,
 }Active_State;
 
 void wF_init(void);
